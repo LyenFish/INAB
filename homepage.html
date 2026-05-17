@@ -7,13 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=100..900&family=Space+Mono:wght=400;700&display=swap');
         
         :root {
             --cols: 7;
             --rows: 4;
             --gap: 6px;
             --bg-opacity: 0.05;
+            --thumb-opacity: 0.8;
             --parallax-x: 0px;
             --parallax-y: 0px;
             --hour-width: 80px;
@@ -29,6 +30,7 @@
             height: 100vh;
             width: 100vw;
         }
+
 
         #bg-layer {
             position: fixed;
@@ -64,24 +66,6 @@
             position: relative;
         }
 
-        .edge-sensor {
-            position: fixed;
-            height: 40px;
-            z-index: 1000;
-        }
-        .sensor-top { 
-            top: 0; 
-            left: 80%; /* Only the last one fifth of the screen */
-            right: 0;
-            cursor: n-resize; 
-        }
-        .sensor-bottom { 
-            bottom: 0; 
-            left: 0;
-            right: 0;
-            cursor: s-resize; 
-        }
-
         .grid-container {
             display: grid;
             grid-template-columns: repeat(var(--cols), 1fr);
@@ -104,12 +88,25 @@
             align-items: center;
             text-decoration: none;
             overflow: hidden;
+            position: relative;
         }
         .dial:hover {
             background: rgba(255, 255, 255, calc(var(--bg-opacity) + 0.1));
             border-color: rgba(255, 255, 255, 0.4);
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .dial-thumbnail {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: var(--thumb-opacity);
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
         .tc-container {
@@ -141,12 +138,9 @@
 
     <div id="bg-layer"></div>
 
-    <div class="edge-sensor sensor-top" onmouseenter="navUp()"></div>
-    <div class="edge-sensor sensor-bottom" onmouseenter="navDown()"></div>
-
     <div class="fixed top-6 right-6 flex gap-4 z-[3000]">
         <button id="settings-toggle" class="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors backdrop-blur-md border border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 1 2-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15-.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 1 2-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
     </div>
 
@@ -207,7 +201,7 @@
                     <a href="https://lyenfish.github.io/toolhub.html" target="_self" class="dial w-32 h-32"></a>
                 </div>
             </div>
-            <div class="absolute bottom-10 text-white/20 text-xs font-bold uppercase tracking-[0.2em] w-full text-center">Move mouse to bottom edge to return home</div>
+            <div class="absolute bottom-10 text-white/20 text-xs font-bold uppercase tracking-[0.2em] w-full text-center">Scroll down to return home</div>
         </section>
 
         <!-- PAGE 1: SHORTCUTS (CENTER HUB) -->
@@ -239,7 +233,7 @@
                     <div id="cityRows" class="flex-grow overflow-y-auto divide-y divide-white/5"></div>
                 </div>
             </div>
-            <div class="absolute top-10 text-white/20 text-xs font-bold uppercase tracking-[0.2em] w-full text-center">Move mouse to top edge to return home</div>
+            <div class="absolute top-10 text-white/20 text-xs font-bold uppercase tracking-[0.2em] w-full text-center">Scroll up to return home</div>
         </section>
     </div>
 
@@ -257,7 +251,7 @@
                         <div><label class="text-[10px] text-zinc-500 uppercase block mb-2">Rows</label><input type="number" id="input-rows" class="w-full bg-white text-black p-3 rounded-xl font-bold"></div>
                         <div class="md:col-span-1"><label class="text-[10px] text-zinc-500 uppercase block mb-2">Wallpaper URL</label><input type="text" id="input-bg" class="w-full bg-white text-black p-3 rounded-xl font-bold"></div>
                         
-                        <!-- Added Sliders -->
+                        <!-- Configuration Sliders -->
                         <div class="md:col-span-1">
                             <label class="text-[10px] text-zinc-500 uppercase block mb-2">Spacing Gap</label>
                             <input type="range" id="input-gap" min="0" max="40" step="1" class="w-full accent-indigo-500">
@@ -265,6 +259,10 @@
                         <div class="md:col-span-1">
                             <label class="text-[10px] text-zinc-500 uppercase block mb-2">Dial Opacity</label>
                             <input type="range" id="input-opacity" min="0" max="100" step="1" class="w-full accent-indigo-500">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="text-[10px] text-zinc-500 uppercase block mb-2">Thumbnail Transparency</label>
+                            <input type="range" id="input-thumb-opacity" min="0" max="100" step="1" class="w-full accent-indigo-500">
                         </div>
                     </div>
                 </section>
@@ -284,7 +282,7 @@
         const currencyData = { USD: { name: "US Dollar", flag: "us", symbol: "$" }, MXN: { name: "Mexican Peso", flag: "mx", symbol: "$" }, EUR: { name: "Euro", flag: "eu", symbol: "€" }, HKD: { name: "Hong Kong Dollar", flag: "hk", symbol: "$" }, AED: { name: "UAE Dirham", flag: "ae", symbol: "د.إ" } };
         const linkDefaults = [ "http://web.telegram.org", "http://web.whatsapp.com", "http://www.youtube.com", "https://music.youtube.com/history", "http://photos.google.com", "https://lyenfish.github.io/simplythree.html", "https://lyenfish.github.io/toolhub.html", "https://www.amazon.com.mx", "https://www.amazon.com", "https://www.mercadolibre.com.mx/#from=homecom", "https://lyenfish.github.io/currency.html", "http://super.walmart.com.mx", "https://docs.google.com/spreadsheets/d/1wxb6Ejmx1y0CXaQ-1phyoDQSB0rkJWy4Z8gf-COMVro/edit?gid=858887906#gid=858887906", "https://docs.google.com/spreadsheets/d/1Kj1ZdOwmHlqhgFFccuH8zxUudkz4UvdsgqpgUcWCe7U", "http://teach.italki.com", "https://drive.google.com/drive/u/2/folders/15u0VJJOJzFyorCYSUaBujT7eK_58Pbkb", "https://calendar.google.com/calendar/u/2/r", "https://docs.google.com/document/d/1UCZSqW6UTHBS9Zxd5fEC2pKdFNOdhMRSleBZ65YYzhY/edit?tab=t.0", "https://www.deepl.com/en/translator", "https://translate.google.com/?sl=en&tl=es&op=translate", "https://conjugator.reverso.net/conjugation-spanish.html", "https://cone-echidna-fdrj.squarespace.com/config/scheduling", "https://askjreyes.talentlms.com/plus/dashboard", "https://mail.google.com/mail/u/2/#inbox", "https://docs.google.com/spreadsheets/d/12DDkzrV0UM6GOyVgqeCcNcqqElx74A9e_WdJxxHVH1g/edit?gid=2034361768#gid=2034361768", "http://maps.google.com", "https://notebooklm.google.com/", "http://gemini.google.com" ];
         const initialDials = {}; linkDefaults.forEach((link, i) => { initialDials[i+1] = { label: '', url: link }; });
-        const DEFAULTS = { cols: 7, rows: 4, gap: 6, bgOpacity: 5, bg: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=2000', calc: { base: "USD", amount: 1.00 }, dials: initialDials };
+        const DEFAULTS = { cols: 7, rows: 4, gap: 6, bgOpacity: 5, thumbOpacity: 80, bg: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=2000', calc: { base: "USD", amount: 1.00 }, dials: initialDials };
         let state = JSON.parse(JSON.stringify(DEFAULTS)); let rates = {};
 
         let navCooldown = false;
@@ -307,6 +305,97 @@
             navCooldown = true;
             setTimeout(() => { navCooldown = false; }, 800);
         }
+
+        let scrollAccumulator = 0;
+        let lastScrollTime = Date.now();
+
+        // High precision scrolling handler with debouncing and page checks
+        window.addEventListener('wheel', (e) => {
+            let isInsideScrollable = false;
+            let path = e.composedPath();
+            for (let el of path) {
+                if (el.classList && (
+                    el.classList.contains('overflow-y-auto') || 
+                    el.classList.contains('overflow-x-auto') || 
+                    el.classList.contains('timeline-scroll') ||
+                    el.id === 'cityRows' ||
+                    el.id === 'settings-overlay' ||
+                    el.closest('#settings-overlay')
+                )) {
+                    if (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) {
+                        isInsideScrollable = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isInsideScrollable) return;
+
+            e.preventDefault();
+
+            if (navCooldown) return;
+
+            const now = Date.now();
+            if (now - lastScrollTime > 100) {
+                scrollAccumulator = 0;
+            }
+            lastScrollTime = now;
+            scrollAccumulator += e.deltaY;
+
+            if (Math.abs(scrollAccumulator) > 35) {
+                if (scrollAccumulator > 0) {
+                    navDown();
+                } else {
+                    navUp();
+                }
+                scrollAccumulator = 0;
+            }
+        }, { passive: false });
+
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            let isInsideScrollable = false;
+            let path = e.composedPath();
+            for (let el of path) {
+                if (el.classList && (
+                    el.classList.contains('overflow-y-auto') || 
+                    el.classList.contains('overflow-x-auto') || 
+                    el.classList.contains('timeline-scroll') ||
+                    el.id === 'cityRows' ||
+                    el.id === 'settings-overlay'
+                )) {
+                    isInsideScrollable = true;
+                    break;
+                }
+            }
+            if (isInsideScrollable) {
+                touchStartY = 0;
+                return;
+            }
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            if (touchStartY === 0) return;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffY = touchStartY - touchEndY;
+            
+            if (Math.abs(diffY) > 80) {
+                if (diffY > 0) {
+                    navDown();
+                } else {
+                    navUp();
+                }
+            }
+            touchStartY = 0;
+        }, { passive: true });
+
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX - window.innerWidth / 2) / 60;
+            const y = (e.clientY - window.innerHeight / 2) / 60;
+            document.documentElement.style.setProperty('--parallax-x', `${-x}px`);
+            document.documentElement.style.setProperty('--parallax-y', `${-y}px`);
+        });
 
         let selectedTime = new Date();
         const allTimezones = Intl.supportedValuesOf('timeZone');
@@ -360,7 +449,7 @@
                 const info = document.createElement('div');
                 info.className = 'city-row-info w-48 md:w-64 flex-shrink-0 p-5 flex items-center gap-4 z-10';
                 info.innerHTML = `
-                    <div class="drag-handle text-white/10 hover:text-blue-400">⠿</div>
+                    <div class="drag-handle text-white/10 hover:text-blue-400 cursor-grab">⠿</div>
                     <div class="flex-grow overflow-hidden">
                         <div class="font-bold text-[12px] truncate text-white/90">${city.name}</div>
                         <div class="text-[9px] text-blue-500 font-bold tabular-nums">${timeStr}</div>
@@ -436,6 +525,8 @@
         }
         function updateList() { Object.keys(currencyData).forEach(code => { const el = document.getElementById(`out-${code}`); if(el) el.innerText = ((state.calc.amount / rates[state.calc.base]) * rates[code]).toLocaleString(undefined, {minimumFractionDigits: 2}); }); }
 
+        document.getElementById('refresh-rates').onclick = fetchRates;
+
         function solve() {
             const a = parseFloat(document.getElementById('inputA').value), b = parseFloat(document.getElementById('inputB').value), c = parseFloat(document.getElementById('inputC').value), resDiv = document.getElementById('result');
             if(isNaN(a) || isNaN(b) || isNaN(c) || a === 0) { resDiv.innerHTML = `<p class="text-rose-400 text-xs">Invalid inputs</p>`; return; }
@@ -460,56 +551,121 @@
             updateStyles(); renderGrid(); fetchRates(); initTimeCompi(); 
         }
         function saveToStorage() { localStorage.setItem('megaBossHubState_v4', JSON.stringify(state)); }
-        function updateStyles() { document.documentElement.style.setProperty('--cols', state.cols); document.documentElement.style.setProperty('--rows', state.rows); document.documentElement.style.setProperty('--gap', `${state.gap}px`); document.documentElement.style.setProperty('--bg-opacity', state.bgOpacity / 100); document.getElementById('bg-layer').style.backgroundImage = `url('${state.bg}')`; }
+        function updateStyles() { 
+            document.documentElement.style.setProperty('--cols', state.cols); 
+            document.documentElement.style.setProperty('--rows', state.rows); 
+            document.documentElement.style.setProperty('--gap', `${state.gap}px`); 
+            document.documentElement.style.setProperty('--bg-opacity', state.bgOpacity / 100); 
+            document.documentElement.style.setProperty('--thumb-opacity', (state.thumbOpacity !== undefined ? state.thumbOpacity : 80) / 100); 
+            document.getElementById('bg-layer').style.backgroundImage = `url('${state.bg}')`; 
+        }
         
         function renderGrid() {
             const grid = document.getElementById('grid'); grid.innerHTML = '';
-            for (let i = 1; i <= state.cols * state.rows; i++) {
+            const total = state.cols * state.rows;
+            for (let i = 1; i <= total; i++) {
                 const d = state.dials[i] || { url: '', label: '' };
-                const a = document.createElement('a'); a.className = 'dial'; a.href = d.url || '#'; a.dataset.pos = i;
-                a.target = '_self';
+                const a = document.createElement('a');
+                a.className = 'dial';
+                
+                if (d.url) {
+                    a.href = d.url;
+                    a.target = '_blank';
+                    
+                    // Pre-allocate a placeholder abstract background thumbnail so transparency is testable immediately
+                    const placeholderThumb = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=350&q=80`;
+                    const activeThumb = d.thumbnail || placeholderThumb;
+                    
+                    a.innerHTML = `
+                        <div class="dial-thumbnail" style="background-image: url('${activeThumb}');"></div>
+                    `;
+                } else {
+                    a.classList.add('opacity-30', 'cursor-not-allowed');
+                }
                 grid.appendChild(a);
             }
         }
 
-        window.onmousemove = (e) => { 
-            const x = (e.clientX / window.innerWidth - 0.5) * -20, y = (e.clientY / window.innerHeight - 0.5) * -20; 
-            document.documentElement.style.setProperty('--parallax-x', `${x}px`); document.documentElement.style.setProperty('--parallax-y', `${y}px`); 
-        };
+        function renderSettingsDials() {
+            const editorList = document.getElementById('dials-editor-list');
+            editorList.innerHTML = '';
+            const total = parseInt(document.getElementById('input-cols').value) * parseInt(document.getElementById('input-rows').value);
+            for (let i = 1; i <= total; i++) {
+                const d = state.dials[i] || { url: '', label: '', thumbnail: '' };
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-800/50 p-4 rounded-2xl border border-white/5 space-y-2';
+                div.innerHTML = `
+                    <div class="text-[10px] font-bold text-white/40 uppercase">Shortcut Slot ${i}</div>
+                    <div class="grid grid-cols-1 gap-2">
+                        <input type="text" id="dial-url-${i}" placeholder="URL (e.g., https://...)" value="${d.url || ''}" class="w-full bg-zinc-950 text-white p-2 rounded-lg text-xs border border-white/10">
+                        <input type="text" id="dial-thumb-${i}" placeholder="Thumbnail Image URL (optional)" value="${d.thumbnail || ''}" class="w-full bg-zinc-950 text-white p-2 rounded-lg text-xs border border-white/10">
+                    </div>
+                `;
+                editorList.appendChild(div);
+            }
+        }
+
         document.getElementById('settings-toggle').onclick = () => {
-            const list = document.getElementById('dials-editor-list'); list.innerHTML = '';
-            document.getElementById('input-cols').value = state.cols; 
-            document.getElementById('input-rows').value = state.rows; 
+            document.getElementById('input-cols').value = state.cols;
+            document.getElementById('input-rows').value = state.rows;
             document.getElementById('input-bg').value = state.bg;
             document.getElementById('input-gap').value = state.gap;
             document.getElementById('input-opacity').value = state.bgOpacity;
-
-            for (let i = 1; i <= state.cols * state.rows; i++) {
-                const d = state.dials[i] || { label: '', url: '' };
-                list.innerHTML += `<div class="bg-white/5 p-4 rounded-xl border border-white/5 space-y-3">
-                    <div class="flex justify-between items-center"><span class="text-[10px] font-black text-white/20">#${i}</span></div>
-                    <input type="text" class="w-full bg-white text-black p-2 rounded-lg text-xs font-bold" data-pos="${i}" data-key="label" placeholder="Label" value="${d.label}">
-                    <input type="text" class="text-black bg-white w-full p-2 rounded-lg text-xs font-bold" data-pos="${i}" data-key="url" placeholder="URL" value="${d.url}">
-                </div>`;
-            }
+            document.getElementById('input-thumb-opacity').value = state.thumbOpacity !== undefined ? state.thumbOpacity : 80;
+            renderSettingsDials();
             document.getElementById('settings-overlay').classList.remove('hidden');
         };
-        document.getElementById('save-btn').onclick = () => {
-            state.cols = parseInt(document.getElementById('input-cols').value);
-            state.rows = parseInt(document.getElementById('input-rows').value);
-            state.bg = document.getElementById('input-bg').value;
-            state.gap = parseInt(document.getElementById('input-gap').value);
-            state.bgOpacity = parseInt(document.getElementById('input-opacity').value);
 
-            document.querySelectorAll('#dials-editor-list input').forEach(inp => {
-                const p = inp.dataset.pos, k = inp.dataset.key; if(!state.dials[p]) state.dials[p] = {}; state.dials[p][k] = inp.value;
-            });
-            saveToStorage(); updateStyles(); renderGrid(); document.getElementById('settings-overlay').classList.add('hidden');
+        document.getElementById('close-settings').onclick = () => {
+            document.getElementById('settings-overlay').classList.add('hidden');
         };
-        document.getElementById('close-settings').onclick = () => document.getElementById('settings-overlay').classList.add('hidden');
-        document.getElementById('refresh-rates').onclick = fetchRates;
-        document.getElementById('reset-btn').onclick = () => { if(confirm('Factory Reset?')) { localStorage.clear(); location.reload(); } };
-        load();
+
+        document.getElementById('save-btn').onclick = () => {
+            state.cols = parseInt(document.getElementById('input-cols').value) || DEFAULTS.cols;
+            state.rows = parseInt(document.getElementById('input-rows').value) || DEFAULTS.rows;
+            state.bg = document.getElementById('input-bg').value || DEFAULTS.bg;
+            state.gap = parseInt(document.getElementById('input-gap').value) || DEFAULTS.gap;
+            state.bgOpacity = parseInt(document.getElementById('input-opacity').value) || DEFAULTS.bgOpacity;
+            state.thumbOpacity = parseInt(document.getElementById('input-thumb-opacity').value) !== undefined ? parseInt(document.getElementById('input-thumb-opacity').value) : DEFAULTS.thumbOpacity;
+
+            // Extract dials dynamic inputs
+            const total = state.cols * state.rows;
+            state.dials = {};
+            for (let i = 1; i <= total; i++) {
+                const url = document.getElementById(`dial-url-${i}`)?.value || '';
+                const thumbnail = document.getElementById(`dial-thumb-${i}`)?.value || '';
+                if (url) {
+                    state.dials[i] = { url, thumbnail };
+                }
+            }
+
+            saveToStorage();
+            updateStyles();
+            renderGrid();
+            document.getElementById('settings-overlay').classList.add('hidden');
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            state = JSON.parse(JSON.stringify(DEFAULTS));
+            saveToStorage();
+            updateStyles();
+            renderGrid();
+            document.getElementById('settings-overlay').classList.add('hidden');
+        };
+
+        // Redraw grid settings dynamically when values change
+        document.getElementById('input-cols').oninput = renderSettingsDials;
+        document.getElementById('input-rows').oninput = renderSettingsDials;
+
+        // Auto selection on input trigger fields
+        document.querySelectorAll('.auto-select').forEach(input => {
+            input.onclick = function() { this.select(); };
+        });
+
+        // Load the dashboard on screen mount
+        window.onload = () => {
+            load();
+        };
     </script>
 </body>
 </html>
