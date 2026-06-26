@@ -20,7 +20,7 @@
             font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
         .question-card {
-            min-height: 220px;
+            min-height: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -141,14 +141,14 @@
     </div>
 
     <div class="max-w-4xl mx-auto">
-        <div id="top" class="sticky-header py-6 mb-8">
+        <div id="top" class="sticky-header py-3 mb-4">
             <div class="flex flex-col items-center">
-                <button onclick="pickRandom()" style="background-color: var(--primary);" class="hover:opacity-90 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform active:scale-95 mb-6">
+                <button onclick="pickRandom()" style="background-color: var(--primary);" class="hover:opacity-90 text-white font-bold py-2 px-8 rounded-full shadow-lg transition-transform active:scale-95 mb-3">
                     Random Question
                 </button>
-                <div class="question-card w-full rounded-2xl shadow-2xl border border-slate-700 p-8 text-center">
+                <div class="question-card w-full rounded-2xl shadow-2xl border border-slate-700 p-5 text-center">
                     <div>
-                        <span id="question-number" class="block text-blue-400 font-bold text-sm uppercase tracking-widest mb-4">Select a Question</span>
+                        <span id="question-number" class="block text-blue-400 font-bold text-sm uppercase tracking-widest mb-2">Select a Question</span>
                         <h2 id="question-text" class="text-xl md:text-2xl font-medium leading-relaxed italic text-slate-100">
                             Ready, Mega boss?
                         </h2>
@@ -310,7 +310,16 @@
         }
 
         function pickRandom() {
-            const randomIndex = Math.floor(Math.random() * totalQuestions) + 1;
+            const unvisited = [];
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (!visitedQuestions.has(i)) unvisited.push(i);
+            }
+            if (unvisited.length === 0) {
+                qNum.innerText = "All done!";
+                qText.innerText = "You've seen every question. Nice work!";
+                return;
+            }
+            const randomIndex = unvisited[Math.floor(Math.random() * unvisited.length)];
             displayQuestion(randomIndex, true);
         }
 
